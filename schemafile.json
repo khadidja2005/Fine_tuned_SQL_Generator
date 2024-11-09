@@ -1,0 +1,161 @@
+const Organization = {
+  id: { type: "String", default: "cuid", primaryKey: true },
+  name: { type: "String" },
+  ownerId: { type: "String", foreignKey: "User.id" },
+  createdAt: { type: "DateTime", default: "now" },
+  updatedAt: { type: "DateTime", updatedAt: true },
+  owner: { type: "User", relation: "ownerId" },
+  managers: { type: "User", relation: "managerId" },
+  inviteLinks: { type: "InviteLink", relation: "organizationId" },
+  cashFlows: { type: "CashFlow", relation: "organizationId" },
+  expenses: { type: "Expenses", relation: "organizationId" },
+  revenue: { type: "Revenue", relation: "organizationId" },
+  profit: { type: "Profit", relation: "organizationId" },
+  budget: { type: "Budget", relation: "organizationId" },
+  debt: { type: "Debt", relation: "organizationId" },
+  investments: { type: "Investments", relation: "organizationId" },
+  funding: { type: "Funding", relation: "organizationId" },
+  reports: { type: "FinancialReports", relation: "organizationId" },
+  assetsLiabilities: { type: "AssetsLiabilities", relation: "organizationId" },
+};
+const User = {
+  id: { type: "String", default: "cuid", primaryKey: true },
+  name: { type: "String", nullable: true },
+  email: { type: "String", unique: true, nullable: true },
+  emailVerified: { type: "DateTime", nullable: true },
+  image: { type: "String", nullable: true },
+  accounts: { type: "Account", relation: "userId" },
+  sessions: { type: "Session", relation: "userId" },
+  posts: { type: "Post", relation: "createdById" },
+  role: { type: "Role", default: "USER" },
+  organizations: { type: "Organization", relation: "ownerId" },
+  managedOrganizations: { type: "Organization", relation: "managerId" },
+  organizationId: { type: "String", nullable: true },
+};
+
+const Role = {
+  OWNER: "OWNER",
+  MANAGER: "MANAGER",
+  USER: "USER",
+};
+
+const CashFlow = {
+    id: Number, // Int
+    date: Date, // DateTime
+    cash_inflow: Number, // Float
+    cash_outflow: Number, // Float
+    net_cash_flow: Number, // Float
+    description: String, // String? (Optional, can be null)
+    category: String, // String? (Optional, can be null)
+    organizationId: String, // String (Relation to Organization)
+    organization: Organization // Relation to Organization
+};
+
+const Expenses = {
+    id: Number, // Int
+    date: Date, // DateTime
+    amount: Number, // Float
+    expense_category: String, // String? (Optional, can be null)
+    department: String, // String? (Optional, can be null)
+    description: String, // String? (Optional, can be null)
+    organizationId: String, // String (Relation to Organization)
+    organization: Organization // Relation to Organization
+};
+
+const Revenue = {
+    id: Number, // Int
+    date: Date, // DateTime
+    amount: Number, // Float
+    product_line: String, // String? (Optional, can be null)
+    customer_type: String, // String? (Optional, can be null)
+    description: String, // String? (Optional, can be null)
+    organizationId: String, // String (Relation to Organization)
+    organization: Organization // Relation to Organization
+};
+
+const Profit = {
+    id: Number, // Int
+    date: Date, // DateTime
+    revenue: Number, // Float
+    expenses: Number, // Float
+    net_profit: Number, // Float
+    profit_margin: Number, // Float? (Optional, can be null)
+    description: String, // String? (Optional, can be null)
+    organizationId: String, // String (Relation to Organization)
+    organization: Organization // Relation to Organization
+};
+
+const Budget = {
+    id: Number, // Int
+    fiscal_year: String, // String? (Optional, can be null)
+    department: String, // String? (Optional, can be null)
+    allocated_budget: Number, // Float
+    spent_budget: Number, // Float
+    remaining_budget: Number, // Float
+    description: String, // String? (Optional, can be null)
+    organizationId: String, // String (Relation to Organization)
+    organization: Organization // Relation to Organization
+};
+
+const Debt = {
+    id: Number, // Int
+    debt_type: String, // String? (Optional, can be null)
+    principal: Number, // Float
+    interest_rate: Number, // Float? (Optional, can be null)
+    maturity_date: Date, // DateTime? (Optional, can be null)
+    payment_due_date: Date, // DateTime? (Optional, can be null)
+    amount_paid: Number, // Float? (Optional, can be null)
+    outstanding_balance: Number, // Float? (Optional, can be null)
+    description: String, // String? (Optional, can be null)
+    organizationId: String, // String (Relation to Organization)
+    organization: Organization // Relation to Organization
+};
+
+const Investments = {
+    id: Number, // Int
+    investment_type: String, // String? (Optional, can be null)
+    investment_amount: Number, // Float
+    investment_date: Date, // DateTime
+    returns: Number, // Float? (Optional, can be null)
+    risk_level: String, // String? (Optional, can be null)
+    current_value: Number, // Float? (Optional, can be null)
+    description: String, // String? (Optional, can be null)
+    organizationId: String, // String (Relation to Organization)
+    organization: Organization, // Relation to Organization
+    date: Date // DateTime
+};
+
+const Funding = {
+    id: Number, // Int
+    funding_round: String, // String? (Optional, can be null)
+    amount_raised: Number, // Float
+    date: Date, // DateTime
+    investor_name: String, // String? (Optional, can be null)
+    valuation: Number, // Float? (Optional, can be null)
+    description: String, // String? (Optional, can be null)
+    organizationId: String, // String (Relation to Organization)
+    organization: Organization // Relation to Organization
+};
+
+const FinancialReports = {
+    id: Number, // Int
+    report_type: String, // String? (Optional, can be null)
+    start_date: Date, // DateTime
+    end_date: Date, // DateTime
+    content: String, // String? (Optional, can be null)
+    created_at: Date, // DateTime (Defaults to now())
+    organizationId: String, // String (Relation to Organization)
+    organization: Organization // Relation to Organization
+};
+
+const AssetsLiabilities = {
+    id: Number, // Int
+    asset_name: String, // String? (Optional, can be null)
+    asset_value: Number, // Float? (Optional, can be null)
+    liability_name: String, // String? (Optional, can be null)
+    liability_value: Number, // Float? (Optional, can be null)
+    date: Date, // DateTime
+    description: String, // String? (Optional, can be null)
+    organizationId: String, // String (Relation to Organization)
+    organization: Organization // Relation to Organization
+};

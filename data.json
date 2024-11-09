@@ -1,0 +1,416 @@
+ [
+{
+  "prompt": "I want to see all organizations managed by a specific user.",
+  "response": "SELECT * \nFROM Organization \nWHERE managerId = 'user_id';"
+},
+{
+  "prompt": "Can I get the financial reports for organization with ID 123?",
+  "response": "SELECT * \nFROM FinancialReports \nWHERE organizationId = '123';"
+},
+{
+  "prompt": "How much revenue does organization with ID 456 have?",
+  "response": "SELECT SUM(amount) AS total_revenue \nFROM Revenue \nWHERE organizationId = '456';"
+},
+{
+  "prompt": "Give me the cash flow for the last month for organization 789.",
+  "response": "SELECT * \nFROM CashFlow \nWHERE organizationId = '789' \nAND date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH);"
+},
+{
+  "prompt": "Show me the budget details for organization 1011 in fiscal year 2024.",
+  "response": "SELECT * \nFROM Budget \nWHERE organizationId = '1011' \nAND fiscal_year = '2024';"
+},
+{
+  "prompt": "I want to view all investments made by organization 2021.",
+  "response": "SELECT * \nFROM Investments \nWHERE organizationId = '2021';"
+},
+{
+  "prompt": "Find all organizations managed by users with verified emails",
+  "response": "SELECT o.* \nFROM Organization o \nJOIN User u ON o.managerId = u.id \nWHERE u.emailVerified IS NOT NULL;"
+},
+{
+  "prompt": "Show me all assets and liabilities for organizations owned by 'john@example.com'",
+  "response": "SELECT o.name, al.asset_name, al.asset_value, al.liability_name, al.liability_value \nFROM Organization o \nJOIN User u ON o.ownerId = u.id \nJOIN AssetsLiabilities al ON o.id = al.organizationId \nWHERE u.email = 'john@example.com';"
+},
+{
+  "prompt": "Get total investments and returns by investment type for each organization",
+  "response": "SELECT o.name, \n       i.investment_type, \n       SUM(i.investment_amount) as total_invested, \n       SUM(i.returns) as total_returns \nFROM Organization o \nJOIN Investments i ON o.id = i.organizationId \nGROUP BY o.id, o.name, i.investment_type;"
+},
+{
+  "prompt": "Calculate profit margins for all organizations in the last quarter",
+  "response": "SELECT o.name, \n       SUM(p.revenue) as total_revenue, \n       SUM(p.expenses) as total_expenses, \n       (SUM(p.net_profit) / SUM(p.revenue) * 100) as profit_margin \nFROM Organization o \nJOIN Profit p ON o.id = p.organizationId \nWHERE p.date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) \nGROUP BY o.id, o.name;"
+},
+{
+  "prompt": "List organizations with their total outstanding debt and nearest payment due",
+  "response": "SELECT o.name, \n       SUM(d.outstanding_balance) as total_debt, \n       MIN(d.payment_due_date) as next_payment_due \nFROM Organization o \nJOIN Debt d ON o.id = d.organizationId \nWHERE d.payment_due_date >= CURDATE() \nGROUP BY o.id, o.name;"
+},
+{
+  "prompt": "Compare budget allocation vs spending across departments for each organization",
+  "response": "SELECT o.name, \n       b.department, \n       SUM(b.allocated_budget) as total_allocated, \n       SUM(b.spent_budget) as total_spent, \n       SUM(b.remaining_budget) as remaining \nFROM Organization o \nJOIN Budget b ON o.id = b.organizationId \nWHERE b.fiscal_year = YEAR(CURDATE()) \nGROUP BY o.id, o.name, b.department;"
+},
+{
+  "prompt": "Show me cash flow trends for organizations with recent funding rounds",
+  "response": "SELECT o.name, \n       cf.date, \n       cf.net_cash_flow, \n       f.funding_round, \n       f.amount_raised \nFROM Organization o \nJOIN CashFlow cf ON o.id = cf.organizationId \nJOIN Funding f ON o.id = f.organizationId \nWHERE f.date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) \nORDER BY o.name, cf.date;"
+},
+{
+  "prompt": "Get organizations where expenses exceeded budget in any department",
+  "response": "SELECT o.name, \n       b.department, \n       b.allocated_budget, \n       SUM(e.amount) as actual_expenses \nFROM Organization o \nJOIN Budget b ON o.id = b.organizationId \nJOIN Expenses e ON o.id = e.organizationId \nWHERE e.department = b.department \nGROUP BY o.id, o.name, b.department, b.allocated_budget \nHAVING actual_expenses > allocated_budget;"
+},
+{
+  "prompt": "Find organizations with high-risk investments that have negative returns",
+  "response": "SELECT o.name, \n       i.investment_type, \n       i.investment_amount, \n       i.returns, \n       i.risk_level \nFROM Organization o \nJOIN Investments i ON o.id = i.organizationId \nWHERE i.risk_level = 'HIGH' \nAND i.returns < 0;"
+},
+{
+  "prompt": "List all financial reports created in the last year with their organization details",
+  "response": "SELECT o.name, \n       fr.report_type, \n       fr.start_date, \n       fr.end_date, \n       fr.created_at \nFROM Organization o \nJOIN FinancialReports fr ON o.id = fr.organizationId \nWHERE fr.created_at >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR) \nORDER BY fr.created_at DESC;"
+},
+{
+  "prompt": "Who are the users managing organizations?",
+  "response": "SELECT DISTINCT u.id, u.name \nFROM User u \nJOIN Organization o ON u.id = o.managerId;"
+},
+{
+  "prompt": "Can you give me the debt information for organization 505?",
+  "response": "SELECT * \nFROM Debt \nWHERE organizationId = '505';"
+},
+{
+  "prompt": "Show me all assets and liabilities for organization 909.",
+  "response": "SELECT asset_name, asset_value, liability_name, liability_value \nFROM AssetsLiabilities \nWHERE organizationId = '909';"
+},
+{
+  "prompt": "How much has organization 303 spent on expenses in the 'Marketing' department?",
+  "response": "SELECT SUM(amount) AS total_expenses \nFROM Expenses \nWHERE organizationId = '303' \nAND department = 'Marketing';"
+},
+{
+  "prompt": "I want to see all organizations managed by a specific user.",
+  "response": "SELECT * \nFROM Organization \nWHERE managerId = 'user_id' \nAND (role = 'MANAGER' OR role = 'ADMIN');"
+},
+{
+  "prompt": "Show me organizations with revenue growth compared to previous month",
+  "response": "SELECT o.name, \n       MONTH(r.date) as month, \n       SUM(r.amount) as current_revenue, \n       LAG(SUM(r.amount)) OVER (PARTITION BY o.id ORDER BY MONTH(r.date)) as prev_month_revenue, \n       ((SUM(r.amount) - LAG(SUM(r.amount)) OVER (PARTITION BY o.id ORDER BY MONTH(r.date))) / LAG(SUM(r.amount)) OVER (PARTITION BY o.id ORDER BY MONTH(r.date)) * 100) as growth_percentage \nFROM Organization o \nJOIN Revenue r ON o.id = r.organizationId \nGROUP BY o.id, o.name, MONTH(r.date) \nHAVING prev_month_revenue IS NOT NULL;"
+},
+{
+  "prompt": "Get a breakdown of expenses by category for each organization this year",
+  "response": "SELECT o.name, \n       e.expense_category, \n       COUNT(*) as transaction_count, \n       SUM(e.amount) as total_amount, \n       AVG(e.amount) as avg_amount \nFROM Organization o \nJOIN Expenses e ON o.id = e.organizationId \nWHERE YEAR(e.date) = YEAR(CURDATE()) \nGROUP BY o.id, o.name, e.expense_category \nORDER BY o.name, total_amount DESC;"
+},
+{
+  "prompt": "Find organizations where managers are also owners",
+  "response": "SELECT o.name, \n       u.email, \n       u.role \nFROM Organization o \nJOIN User u ON o.ownerId = u.id \nWHERE o.ownerId IN (\n    SELECT managerId \n    FROM Organization \n    WHERE id = o.id\n);"
+},
+{
+  "prompt": "List all organizations with their asset to liability ratio",
+  "response": "SELECT o.name, \n       SUM(al.asset_value) as total_assets, \n       SUM(al.liability_value) as total_liabilities, \n       CASE \n           WHEN SUM(al.liability_value) = 0 THEN NULL \n           ELSE SUM(al.asset_value) / SUM(al.liability_value) \n       END as asset_liability_ratio \nFROM Organization o \nJOIN AssetsLiabilities al ON o.id = al.organizationId \nGROUP BY o.id, o.name;"
+},
+{
+  "prompt": "Show me organizations that have received multiple funding rounds with increasing valuations",
+  "response": "WITH FundingRanks AS (\n    SELECT organizationId, \n           funding_round, \n           valuation, \n           LAG(valuation) OVER (PARTITION BY organizationId ORDER BY date) as prev_valuation \n    FROM Funding\n) \nSELECT o.name, \n       f.funding_round, \n       f.valuation, \n       f.prev_valuation, \n       ((f.valuation - f.prev_valuation) / f.prev_valuation * 100) as valuation_growth \nFROM Organization o \nJOIN FundingRanks f ON o.id = f.organizationId \nWHERE f.valuation > f.prev_valuation;"
+},
+{
+  "prompt": "Calculate the burn rate for each organization based on cash flow",
+  "response": "SELECT o.name, \n       AVG(cf.cash_outflow) as avg_monthly_burn, \n       SUM(cf.net_cash_flow) as total_runway, \n       CASE \n           WHEN AVG(cf.cash_outflow) = 0 THEN NULL \n           ELSE SUM(cf.net_cash_flow) / AVG(cf.cash_outflow) \n       END as runway_months \nFROM Organization o \nJOIN CashFlow cf ON o.id = cf.organizationId \nWHERE cf.date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) \nGROUP BY o.id, o.name;"
+},
+{
+  "prompt": "Find organizations with overdue debts and their payment history",
+  "response": "SELECT o.name, \n       d.debt_type, \n       d.principal, \n       d.outstanding_balance, \n       d.payment_due_date, \n       DATEDIFF(CURDATE(), d.payment_due_date) as days_overdue \nFROM Organization o \nJOIN Debt d ON o.id = d.organizationId \nWHERE d.payment_due_date < CURDATE() \nAND d.outstanding_balance > 0 \nORDER BY days_overdue DESC;"
+},
+{
+  "prompt": "Show me organizations with their investment portfolio diversity",
+  "response": "SELECT o.name, \n       COUNT(DISTINCT i.investment_type) as investment_types, \n       COUNT(*) as total_investments, \n       SUM(i.investment_amount) as total_invested, \n       AVG(i.returns) as avg_returns, \n       STRING_AGG(DISTINCT i.risk_level, ', ') as risk_levels \nFROM Organization o \nJOIN Investments i ON o.id = i.organizationId \nGROUP BY o.id, o.name;"
+},
+{
+  "prompt": "Get profit trends by quarter for each organization",
+  "response": "SELECT o.name, \n       YEAR(p.date) as year, \n       QUARTER(p.date) as quarter, \n       SUM(p.revenue) as quarterly_revenue, \n       SUM(p.expenses) as quarterly_expenses, \n       SUM(p.net_profit) as quarterly_profit, \n       AVG(p.profit_margin) as avg_profit_margin \nFROM Organization o \nJOIN Profit p ON o.id = p.organizationId \nGROUP BY o.id, o.name, YEAR(p.date), QUARTER(p.date) \nORDER BY o.name, year, quarter;"
+},
+{
+  "prompt": "Find organizations that have budget surplus in some departments but deficit in others",
+  "response": "WITH BudgetStatus AS (\n    SELECT o.id, \n           o.name, \n           b.department, \n           b.allocated_budget, \n           b.spent_budget, \n           (b.allocated_budget - b.spent_budget) as budget_balance \n    FROM Organization o \n    JOIN Budget b ON o.id = b.organizationId\n) \nSELECT DISTINCT bs1.name \nFROM BudgetStatus bs1 \nJOIN BudgetStatus bs2 ON bs1.id = bs2.id \nWHERE bs1.budget_balance > 0 \nAND bs2.budget_balance < 0;"
+},
+{
+  "prompt": "List organizations with their total financial health score",
+  "response": "SELECT o.name, \n       (SUM(p.net_profit) / NULLIF(SUM(p.revenue), 0) * 30 + \n        SUM(cf.net_cash_flow) / NULLIF(ABS(SUM(cf.cash_outflow)), 0) * 30 + \n        SUM(al.asset_value) / NULLIF(SUM(al.liability_value), 0) * 40) as health_score \nFROM Organization o \nLEFT JOIN Profit p ON o.id = p.organizationId \nLEFT JOIN CashFlow cf ON o.id = cf.organizationId \nLEFT JOIN AssetsLiabilities al ON o.id = al.organizationId \nWHERE p.date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR) \nGROUP BY o.id, o.name;"
+},
+{
+  "prompt": "Show me organizations where revenue from specific product lines is growing",
+  "response": "WITH ProductLineGrowth AS (\n    SELECT o.id, \n           o.name, \n           r.product_line, \n           DATE_FORMAT(r.date, '%Y-%m') as month, \n           SUM(r.amount) as monthly_revenue, \n           LAG(SUM(r.amount)) OVER (PARTITION BY o.id, r.product_line ORDER BY DATE_FORMAT(r.date, '%Y-%m')) as prev_month_revenue \n    FROM Organization o \n    JOIN Revenue r ON o.id = r.organizationId \n    WHERE r.product_line IS NOT NULL \n    GROUP BY o.id, o.name, r.product_line, DATE_FORMAT(r.date, '%Y-%m')\n) \nSELECT name, \n       product_line, \n       month, \n       monthly_revenue, \n       ((monthly_revenue - prev_month_revenue) / prev_month_revenue * 100) as growth_rate \nFROM ProductLineGrowth \nWHERE prev_month_revenue IS NOT NULL \nAND monthly_revenue > prev_month_revenue;"
+},
+{
+  "prompt": "Can I get the financial reports for organization with ID 123?",
+  "response": "SELECT * \nFROM FinancialReports \nWHERE organizationId = '123' \nAND (user_id IN (SELECT id FROM User WHERE organizationId = '123' AND (role = 'MANAGER' OR role = 'ADMIN')));"
+},
+{
+  "prompt": "How much revenue does organization with ID 456 have?",
+  "response": "SELECT SUM(amount) AS total_revenue \nFROM Revenue \nWHERE organizationId = '456' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = '456' \n);"
+},
+{
+  "prompt": "Give me the cash flow for the last month for organization 789.",
+  "response": "SELECT * \nFROM CashFlow \nWHERE organizationId = '789' \nAND date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = '789' \n);"
+},
+{
+  "prompt": "Show me the budget details for organization 1011 in fiscal year 2024.",
+  "response": "SELECT * \nFROM Budget \nWHERE organizationId = '1011' \nAND fiscal_year = '2024' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = '1011' \n);"
+},
+{
+  "prompt": "I want to view all investments made by organization 2021.",
+  "response": "SELECT * \nFROM Investments \nWHERE organizationId = '2021' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = '2021' \n);"
+},
+{
+  "prompt": "Who are the users managing organizations?",
+  "response": "SELECT DISTINCT u.id, u.name \nFROM User u \nJOIN Organization o ON u.id = o.managerId \nWHERE o.organizationId IN (SELECT organizationId FROM User WHERE id = 'user_id' AND (role = 'MANAGER' OR role = 'ADMIN'));"
+},
+{
+  "prompt": "Can you give me the debt information for organization 505?",
+  "response": "SELECT * \nFROM Debt \nWHERE organizationId = '505' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = '505' \n);"
+},
+{
+  "prompt": "Show me all assets and liabilities for organization 909.",
+  "response": "SELECT asset_name, asset_value, liability_name, liability_value \nFROM AssetsLiabilities \nWHERE organizationId = '909' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = '909' \n);"
+},
+{
+  "prompt": "How much has organization 303 spent on expenses in the 'Marketing' department?",
+  "response": "SELECT SUM(amount) AS total_expenses \nFROM Expenses \nWHERE organizationId = '303' \nAND department = 'Marketing' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = '303' \n);"
+},
+{
+  "prompt": "Can a manager access user data from another organization?",
+  "response": "SELECT * \nFROM User \nWHERE organizationId = 'user_org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE id = 'user_org_id' \n  AND managerId = 'manager_id' \n) \nAND NOT EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE id = 'other_org_id' \n  AND managerId = 'manager_id' \n);"
+},
+{
+  "prompt": "Can a manager view all users from their organization?",
+  "response": "SELECT * \nFROM User \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE id = 'org_id' \n  AND managerId = 'manager_id' \n);"
+},
+{
+  "prompt": "Can an admin view the list of users from all organizations?",
+  "response": "SELECT * \nFROM User \nWHERE EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE adminId = 'admin_id' \n);"
+},
+{
+  "prompt": "Show me the tasks assigned to users within the organization of user ID 123.",
+  "response": "SELECT * \nFROM Tasks \nWHERE organizationId = (SELECT organizationId \n                         FROM User \n                         WHERE id = '123') \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = (SELECT organizationId \n                         FROM User \n                         WHERE id = '123') \n);"
+}
+,
+{
+  "prompt": "Can an admin update the organization's financial data?",
+  "response": "UPDATE FinancialReports \nSET reportData = 'new_data' \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND role = 'ADMIN' \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager view all departments in their organization?",
+  "response": "SELECT * \nFROM Department \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Show me the projects that a manager can access from their organization.",
+  "response": "SELECT * \nFROM Projects \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager change the organization's budget data?",
+  "response": "UPDATE Budget \nSET amount = 'new_budget' \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can an admin view financial transactions for all organizations?",
+  "response": "SELECT * \nFROM FinancialTransactions \nWHERE EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND role = 'ADMIN' \n  AND organizationId IN (SELECT organizationId FROM Organization WHERE adminId = 'user_id') \n);"
+},
+{
+  "prompt": "Can a manager see the financial details of another organization?",
+  "response": "SELECT * \nFROM FinancialDetails \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n) \nAND NOT EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'other_org_id' \n);"
+},
+{
+  "prompt": "Can a manager access all user records in their organization for audit purposes?",
+  "response": "SELECT * \nFROM User \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager remove a user from the organization?",
+  "response": "DELETE FROM User \nWHERE id = 'user_id' \nAND organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can an admin view financial data across all organizations they manage?",
+  "response": "SELECT * \nFROM FinancialData \nWHERE EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE adminId = 'admin_id' \n);"
+}
+,
+{
+  "prompt": "Can a manager view sensitive documents from their organization?",
+  "response": "SELECT * \nFROM SensitiveDocuments \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager or admin view tasks from users in another organization?",
+  "response": "SELECT * \nFROM Tasks \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n) \nAND NOT EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'other_org_id' \n);"
+},
+{
+  "prompt": "Can a manager view the average budget for their organization?",
+  "response": "SELECT AVG(amount) AS average_budget \nFROM Budget \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can an admin view the total expenses across all organizations?",
+  "response": "SELECT SUM(amount) AS total_expenses \nFROM Expenses \nWHERE EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE adminId = 'admin_id' \n);"
+},
+{
+  "prompt": "Can a manager update the budget allocation for their organization?",
+  "response": "UPDATE Budget \nSET amount = 'new_amount' \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager view the average expenses for their organization?",
+  "response": "SELECT AVG(amount) AS average_expenses \nFROM Expenses \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can an admin view the budget details for all organizations?",
+  "response": "SELECT * \nFROM Budget \nWHERE EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE adminId = 'admin_id' \n);"
+},
+{
+  "prompt": "Can a manager delete an expense record in their organization?",
+  "response": "DELETE FROM Expenses \nWHERE id = 'expense_id' \nAND organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager view the total expenses for their organization?",
+  "response": "SELECT SUM(amount) AS total_expenses \nFROM Expenses \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can an admin view the total budget across all organizations?",
+  "response": "SELECT SUM(amount) AS total_budget \nFROM Budget \nWHERE EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE adminId = 'admin_id' \n);"
+},
+{
+  "prompt": "Can a manager update an organization's expense record?",
+  "response": "UPDATE Expenses \nSET amount = 'new_amount' \nWHERE id = 'expense_id' \nAND organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+}
+,
+{
+  "prompt": "Can a manager view the expense breakdown by category for their organization?",
+  "response": "SELECT category, SUM(amount) AS total_expense \nFROM Expenses \nWHERE organizationId = 'org_id' \nGROUP BY category \nHAVING EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can an admin view the average expense by category for all organizations they manage?",
+  "response": "SELECT category, AVG(amount) AS average_expense \nFROM Expenses \nWHERE EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE adminId = 'admin_id' \n) \nGROUP BY category;"
+},
+{
+  "prompt": "Can a manager see the expense report for a specific user within their organization?",
+  "response": "SELECT * \nFROM Expenses \nWHERE userId = 'user_id' \nAND organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager compare the budget vs. expenses for their organization?",
+  "response": "SELECT b.amount AS budget, e.amount AS expenses \nFROM Budget b \nJOIN Expenses e \nON b.organizationId = e.organizationId \nWHERE b.organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND b.organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager view the budget progress throughout the year for their organization?",
+  "response": "SELECT month, amount \nFROM BudgetProgress \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can an admin see the average budget vs. expenses for all organizations they manage?",
+  "response": "SELECT AVG(b.amount) AS average_budget, AVG(e.amount) AS average_expenses \nFROM Budget b \nJOIN Expenses e \nON b.organizationId = e.organizationId \nWHERE EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE adminId = 'admin_id' \n);"
+},
+{
+  "prompt": "Can a manager generate a financial report for their organization?",
+  "response": "SELECT * \nFROM FinancialReport \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Give me the total expenses for the last 30 days in my organization.",
+  "response": "SELECT SUM(amount) AS total_expenses \nFROM Expenses \nWHERE organizationId = 'org_id' \nAND date >= CURRENT_DATE - INTERVAL 30 DAY \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager view the expense breakdown by category for their organization?",
+  "response": "SELECT category, SUM(amount) AS total_expense \nFROM Expenses \nWHERE organizationId = 'org_id' \nGROUP BY category \nHAVING EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can an admin view the average expense by category for all organizations they manage?",
+  "response": "SELECT category, AVG(amount) AS average_expense \nFROM Expenses \nWHERE EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE adminId = 'admin_id' \n) \nGROUP BY category;"
+},
+{
+  "prompt": "Can a manager see the expense report for a specific user within their organization?",
+  "response": "SELECT * \nFROM Expenses \nWHERE userId = 'user_id' \nAND organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager compare the budget vs. expenses for their organization?",
+  "response": "SELECT b.amount AS budget, e.amount AS expenses \nFROM Budget b \nJOIN Expenses e \nON b.organizationId = e.organizationId \nWHERE b.organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND b.organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can a manager view the budget progress throughout the year for their organization?",
+  "response": "SELECT month, amount \nFROM BudgetProgress \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Can an admin see the average budget vs. expenses for all organizations they manage?",
+  "response": "SELECT AVG(b.amount) AS average_budget, AVG(e.amount) AS average_expenses \nFROM Budget b \nJOIN Expenses e \nON b.organizationId = e.organizationId \nWHERE EXISTS ( \n  SELECT 1 \n  FROM Organization \n  WHERE adminId = 'admin_id' \n);"
+},
+{
+  "prompt": "Can a manager generate a financial report for their organization?",
+  "response": "SELECT * \nFROM FinancialReport \nWHERE organizationId = 'org_id' \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'manager_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+},
+{
+  "prompt": "Give me the total expenses for the last 30 days in my organization.",
+  "response": "SELECT SUM(amount) AS total_expenses \nFROM Expenses \nWHERE organizationId = 'org_id' \nAND date >= CURRENT_DATE - INTERVAL 30 DAY \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+}
+,
+    {
+    "prompt": "Calculate the total revenue for my organization in the last 30 days.",
+    "response": "SELECT SUM(amount) AS total_revenue \nFROM Revenues \nWHERE organizationId = 'org_id' \nAND date >= CURRENT_DATE - INTERVAL 30 DAY \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Give me the average daily expense for the last 30 days in my organization.",
+    "response": "SELECT AVG(amount) AS average_daily_expense \nFROM Expenses \nWHERE organizationId = 'org_id' \nAND date >= CURRENT_DATE - INTERVAL 30 DAY \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Calculate the latest revenue in the last 30 days for my organization.",
+    "response": "SELECT amount AS latest_revenue \nFROM Revenues \nWHERE organizationId = 'org_id' \nAND date >= CURRENT_DATE - INTERVAL 30 DAY \nORDER BY date DESC LIMIT 1 \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Give me the total expenses for the current month in my organization.",
+    "response": "SELECT SUM(amount) AS total_expenses \nFROM Expenses \nWHERE organizationId = 'org_id' \nAND MONTH(date) = MONTH(CURRENT_DATE) \nAND YEAR(date) = YEAR(CURRENT_DATE) \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Calculate the total revenue for the current month in my organization.",
+    "response": "SELECT SUM(amount) AS total_revenue \nFROM Revenues \nWHERE organizationId = 'org_id' \nAND MONTH(date) = MONTH(CURRENT_DATE) \nAND YEAR(date) = YEAR(CURRENT_DATE) \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Give me the average revenue per day for the last 30 days in my organization.",
+    "response": "SELECT AVG(amount) AS average_daily_revenue \nFROM Revenues \nWHERE organizationId = 'org_id' \nAND date >= CURRENT_DATE - INTERVAL 30 DAY \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Calculate the total expenses and revenue comparison for the last 30 days in my organization.",
+    "response": "SELECT \n  (SELECT SUM(amount) FROM Expenses WHERE organizationId = 'org_id' AND date >= CURRENT_DATE - INTERVAL 30 DAY) AS total_expenses, \n  (SELECT SUM(amount) FROM Revenues WHERE organizationId = 'org_id' AND date >= CURRENT_DATE - INTERVAL 30 DAY) AS total_revenue \nWHERE EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Give me the list of expenses for the last 30 days for my organization.",
+    "response": "SELECT * \nFROM Expenses \nWHERE organizationId = 'org_id' \nAND date >= CURRENT_DATE - INTERVAL 30 DAY \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Calculate the latest expenses for my organization in the last 30 days.",
+    "response": "SELECT * \nFROM Expenses \nWHERE organizationId = 'org_id' \nAND date >= CURRENT_DATE - INTERVAL 30 DAY \nORDER BY date DESC LIMIT 1 \nAND EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Give me the comparison between total expenses and total revenue for the current month in my organization.",
+    "response": "SELECT \n  (SELECT SUM(amount) FROM Expenses WHERE organizationId = 'org_id' AND MONTH(date) = MONTH(CURRENT_DATE) AND YEAR(date) = YEAR(CURRENT_DATE)) AS total_expenses, \n  (SELECT SUM(amount) FROM Revenues WHERE organizationId = 'org_id' AND MONTH(date) = MONTH(CURRENT_DATE) AND YEAR(date) = YEAR(CURRENT_DATE)) AS total_revenue \nWHERE EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Calculate the total revenue and total expenses for the previous month in my organization.",
+    "response": "SELECT \n  (SELECT SUM(amount) FROM Expenses WHERE organizationId = 'org_id' AND MONTH(date) = MONTH(CURRENT_DATE) - 1 AND YEAR(date) = YEAR(CURRENT_DATE)) AS total_expenses, \n  (SELECT SUM(amount) FROM Revenues WHERE organizationId = 'org_id' AND MONTH(date) = MONTH(CURRENT_DATE) - 1 AND YEAR(date) = YEAR(CURRENT_DATE)) AS total_revenue \nWHERE EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+    "prompt": "Give me the average expense per category for the last 30 days in my organization.",
+    "response": "SELECT category, AVG(amount) AS average_expense \nFROM Expenses \nWHERE organizationId = 'org_id' \nAND date >= CURRENT_DATE - INTERVAL 30 DAY \nGROUP BY category \nHAVING EXISTS ( \n  SELECT 1 \n  FROM User \n  WHERE id = 'user_id' \n  AND (role = 'MANAGER' OR role = 'ADMIN') \n  AND organizationId = 'org_id' \n);"
+  },
+  {
+  "prompt": "Calculate the rolling 3-month average revenue for each organization",
+  "response": "SELECT o.name, \n       r.date, \n       r.amount as monthly_revenue, \n       AVG(r.amount) OVER (PARTITION BY o.id ORDER BY r.date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as rolling_3month_avg \nFROM Organization o \nJOIN Revenue r ON o.id = r.organizationId \nORDER BY o.name, r.date;"
+},
+{
+  "prompt": "Find organizations that have consistent monthly expenses exceeding their average revenue",
+  "response": "WITH MonthlyMetrics AS (\n    SELECT o.id, \n           o.name, \n           DATE_FORMAT(e.date, '%Y-%m') as month, \n           SUM(e.amount) as monthly_expenses, \n           (SELECT AVG(amount) \n            FROM Revenue \n            WHERE organizationId = o.id) as avg_monthly_revenue \n    FROM Organization o \n    JOIN Expenses e ON o.id = e.organizationId \n    GROUP BY o.id, o.name, DATE_FORMAT(e.date, '%Y-%m')\n) \nSELECT DISTINCT name \nFROM MonthlyMetrics \nWHERE monthly_expenses > avg_monthly_revenue \nGROUP BY id, name \nHAVING COUNT(*) >= 3;"
+},
+{
+  "prompt": "Show me organizations with their investment performance by risk category",
+  "response": "SELECT o.name, \n       i.risk_level, \n       COUNT(*) as num_investments, \n       SUM(i.investment_amount) as total_invested, \n       SUM(i.returns) as total_returns, \n       (SUM(i.returns) / NULLIF(SUM(i.investment_amount), 0) * 100) as roi_percentage, \n       MIN(i.returns) as worst_return, \n       MAX(i.returns) as best_return \nFROM Organization o \nJOIN Investments i ON o.id = i.organizationId \nWHERE i.risk_level IS NOT NULL \nGROUP BY o.id, o.name, i.risk_level \nORDER BY o.name, roi_percentage DESC;"
+},
+{
+  "prompt": "Get a detailed debt-to-equity ratio analysis for organizations",
+  "response": "WITH EquityCalculation AS (\n    SELECT organizationId, \n           SUM(asset_value) - SUM(liability_value) as total_equity \n    FROM AssetsLiabilities \n    GROUP BY organizationId\n) \nSELECT o.name, \n       SUM(d.outstanding_balance) as total_debt, \n       ec.total_equity, \n       CASE \n           WHEN ec.total_equity = 0 THEN NULL \n           ELSE SUM(d.outstanding_balance) / ec.total_equity \n       END as debt_to_equity_ratio \nFROM Organization o \nJOIN Debt d ON o.id = d.organizationId \nJOIN EquityCalculation ec ON o.id = ec.organizationId \nGROUP BY o.id, o.name, ec.total_equity;"
+},
+{
+  "prompt": "List organizations with potential cash flow problems based on recent trends",
+  "response": "WITH CashFlowTrends AS (\n    SELECT o.id, \n           o.name, \n           DATE_FORMAT(cf.date, '%Y-%m') as month, \n           SUM(cf.net_cash_flow) as monthly_net_cash, \n           COUNT(*) OVER (PARTITION BY o.id ORDER BY DATE_FORMAT(cf.date, '%Y-%m') \n                          ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as months_count, \n           SUM(SUM(cf.net_cash_flow)) OVER (PARTITION BY o.id ORDER BY DATE_FORMAT(cf.date, '%Y-%m') \n                                           ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as three_month_total \n    FROM Organization o \n    JOIN CashFlow cf ON o.id = cf.organizationId \n    GROUP BY o.id, o.name, DATE_FORMAT(cf.date, '%Y-%m')\n) \nSELECT name, \n       month, \n       monthly_net_cash, \n       three_month_total \nFROM CashFlowTrends \nWHERE months_count = 3 \nAND three_month_total < 0 \nORDER BY month DESC;"
+},
+{
+  "prompt": "Find organizations where manager turnover correlates with financial performance changes",
+  "response": "WITH ManagerChanges AS (\n    SELECT o.id, \n           o.name, \n           COUNT(DISTINCT o.managerId) as manager_count, \n           MIN(o.updatedAt) as first_change, \n           MAX(o.updatedAt) as last_change \n    FROM Organization o \n    GROUP BY o.id, o.name\n), \nFinancialChanges AS (\n    SELECT p.organizationId, \n           AVG(CASE WHEN p.date >= mc.last_change THEN p.net_profit \n               ELSE NULL END) as profit_after_change, \n           AVG(CASE WHEN p.date < mc.first_change THEN p.net_profit \n               ELSE NULL END) as profit_before_change \n    FROM Profit p \n    JOIN ManagerChanges mc ON p.organizationId = mc.id \n    GROUP BY p.organizationId\n) \nSELECT mc.name, \n       mc.manager_count, \n       fc.profit_before_change, \n       fc.profit_after_change, \n       ((fc.profit_after_change - fc.profit_before_change) / \n        NULLIF(ABS(fc.profit_before_change), 0) * 100) as profit_change_percentage \nFROM ManagerChanges mc \nJOIN FinancialChanges fc ON mc.id = fc.organizationId \nWHERE mc.manager_count > 1;"
+},
+{
+  "prompt": "Analyze budget efficiency across departments and organizations",
+  "response": "WITH DepartmentEfficiency AS (\n    SELECT o.id, \n           o.name, \n           b.department, \n           b.allocated_budget, \n           b.spent_budget, \n           ((b.allocated_budget - b.spent_budget) / b.allocated_budget * 100) as budget_efficiency, \n           DENSE_RANK() OVER (PARTITION BY b.department ORDER BY \n               ((b.allocated_budget - b.spent_budget) / b.allocated_budget * 100) DESC) as dept_rank \n    FROM Organization o \n    JOIN Budget b ON o.id = b.organizationId \n    WHERE b.allocated_budget > 0\n) \nSELECT name, \n       department, \n       allocated_budget, \n       spent_budget, \n       budget_efficiency, \n       CASE \n           WHEN dept_rank = 1 THEN 'Most Efficient' \n           WHEN dept_rank = 2 THEN 'Runner Up' \n           ELSE 'Need Improvement' \n       END as efficiency_rating \nFROM DepartmentEfficiency \nWHERE dept_rank <= 3 \nORDER BY department, dept_rank;"
+},
+{
+  "prompt": "Get a comprehensive financial health report for organizations",
+  "response": "WITH Metrics AS (\n    SELECT o.id, \n           o.name, \n           -- Profitability\n           AVG(p.profit_margin) as avg_profit_margin, \n           -- Liquidity\n           SUM(cf.net_cash_flow) / NULLIF(ABS(SUM(cf.cash_outflow)), 0) as cash_flow_ratio, \n           -- Solvency\n           SUM(al.asset_value) / NULLIF(SUM(al.liability_value), 0) as solvency_ratio, \n           -- Growth\n           (MAX(r.amount) - MIN(r.amount)) / NULLIF(MIN(r.amount), 0) * 100 as revenue_growth_rate \n    FROM Organization o \n    LEFT JOIN Profit p ON o.id = p.organizationId \n    LEFT JOIN CashFlow cf ON o.id = cf.organizationId \n    LEFT JOIN AssetsLiabilities al ON o.id = al.organizationId \n    LEFT JOIN Revenue r ON o.id = r.organizationId \n    GROUP BY o.id, o.name\n) \nSELECT name, \n       avg_profit_margin, \n       cash_flow_ratio, \n       solvency_ratio, \n       revenue_growth_rate, \n       CASE \n           WHEN avg_profit_margin >= 15 AND cash_flow_ratio >= 1.5 \n                AND solvency_ratio >= 2 AND revenue_growth_rate >= 10 THEN 'Excellent' \n           WHEN avg_profit_margin >= 10 AND cash_flow_ratio >= 1.2 \n                AND solvency_ratio >= 1.5 AND revenue_growth_rate >= 5 THEN 'Good' \n           WHEN avg_profit_margin >= 5 AND cash_flow_ratio >= 1 \n                AND solvency_ratio >= 1 AND revenue_growth_rate >= 0 THEN 'Fair' \n           ELSE 'Needs Attention' \n       END as financial_health_status \nFROM Metrics \nORDER BY FIELD(financial_health_status, 'Excellent', 'Good', 'Fair', 'Needs Attention');"
+}
+
+]
+
